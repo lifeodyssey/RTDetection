@@ -8,7 +8,7 @@ import os
 import glob
 import matplotlib.pyplot as plt
 from QAAV6GOCI import QAAv6
-nc1=nc4.Dataset('I:/Nagoya University/Project/HAB/satellite/GOCI/non bloom/G2019306021642.L2_COMS_OCnbnc_reprojected.nc','r')
+nc1=nc4.Dataset('I:/Nagoya University/Project/HAB/satellite/GOCI/subtry.nc','r')
 lon = np.array(nc1.variables['lon'])
 lat = np.array(nc1.variables['lat'])
 
