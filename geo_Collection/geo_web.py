@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import math
 from scipy.interpolate import RectSphereBivariateSpline
+from matplotlib.colors import LogNorm
 
 def swath_resampling(src_data: np.ma.array, src_lon: np.array, src_lat: np.array,
                      trg_lon: np.array, trg_lat: np.array, search_radius: float):
@@ -14,16 +15,16 @@ def swath_resampling(src_data: np.ma.array, src_lon: np.array, src_lat: np.array
         grid_def = pyresample.geometry.SwathDefinition(lons=trg_lon, lats=trg_lat)
 
     #source grid with original swath data
-    if len(src_lon.shape) == 1:
-        swath_def = pyresample.geometry.SwathDefinition(np.meshgrid(src_lon, src_lat))
-    else:
-        swath_def = pyresample.geometry.SwathDefinition(lons=src_lon, lats=src_lat)
+    # if len(src_lon.shape) == 1:
+    #     swath_def = pyresample.geometry.SwathDefinition(*np.meshgrid(src_lon, src_lat,sparse=True))
+    # else:
+    #     swath_def = pyresample.geometry.SwathDefinition(lons=src_lon, lats=src_lat)
 
-    #swath_def = pyresample.geometry.SwathDefinition(lons=src_lon, lats=src_lat)
+    swath_def = pyresample.geometry.SwathDefinition(lons=src_lon, lats=src_lat)
     # resample (here we use nearest. Bilinear, gaussian and custom defined methods are available)
     # for more, visit https://pyresample.readthedocs.io/en/latest/
     result = pyresample.kd_tree.resample_nearest(swath_def, src_data, grid_def, epsilon=0.5,
-                                                 fill_value=None, radius_of_influence=search_radius)
+                                                 fill_value=np.nan, radius_of_influence=search_radius)
     return result, grid_def
 
 
@@ -45,11 +46,11 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
     if (lon_range is not None) and (lat_range is not None):
         m = Basemap(llcrnrlon=min(lon_range), llcrnrlat=min(lat_range),
                     urcrnrlon=max(lon_range), urcrnrlat=max(lat_range),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
     else:
         m = Basemap(llcrnrlon=lon.min(), llcrnrlat=lat.min(),
                     urcrnrlon=lon.max(), urcrnrlat=lat.max(),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
     x2d, y2d = m(lon, lat)
 
     fig = plt.figure(figsize=(8, 8 * m.aspect))
@@ -74,7 +75,7 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
         bounds = np.linspace(cmn, cmx, ncl)
         norm = colors.BoundaryNorm(boundaries=bounds, ncolors=ncl)
 
-    p = m.pcolor(x2d, y2d, sds, norm=norm, cmap=plt.cm.jet)
+    p = m.pcolor(x2d, y2d, sds, norm=LogNorm(vmin=0.1, vmax=70), cmap='jet')
 
     if title is not None:
         plt.title(title)

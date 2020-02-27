@@ -63,10 +63,10 @@ ax = fig.add_subplot(1, 1, 1)
 # setup Lambert Conformal basemap.
 ax = Basemap(projection='mill',
             llcrnrlat = 32.5,
-            llcrnrlon = 130.5,
+            llcrnrlon = 130.8,
             urcrnrlat = 35,
             urcrnrlon = 136,
-            resolution='h')
+            resolution='f')
 # draw coastlines.
 ax.drawcoastlines()
 # draw a boundary around the map, fill the background.
@@ -77,12 +77,12 @@ ax.drawmapboundary()
 ax.fillcontinents()
 ax.drawcountries()
 ax.drawrivers(color='#0000ff')
-parallels=np.arange(33,35,0.5)
+parallels=np.arange(32.5,35,0.5)
 ax.drawparallels(parallels,fontsize=10,linewidth=0.25,dashes=[7,15],
                 color='k',labels=[1,0,1,1])
 ##dash：http://bbs.06climate.com/home.php?mod=space&uid=8934&do=blog&id=3284 参考
 ##linewidth：线的宽度
-meridians = np.arange(130,135,0.5)
+meridians = np.arange(131,136,0.5)
 ax.drawmeridians(meridians,fontsize=10,dashes=[7,15],
                 linewidth=0.3, color='k',labels=[1,1,0,1])
 # x,y=ax(lon,lat)
