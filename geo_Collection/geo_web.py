@@ -58,8 +58,8 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
     # changed to facecolor 8 October 2019
 
     if (lon_range is not None) and (lat_range is not None):
-        parallels = np.linspace(min(lat_range), max(lat_range), 4)
-        meridians = np.linspace(min(lon_range), max(lon_range), 3)
+        parallels = np.arange(min(lat_range), max(lat_range), 3)
+        meridians = np.arange(min(lon_range), max(lon_range), 4)
     else:
         parallels = meridians = None
 
@@ -67,38 +67,45 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
         cmn, cmx = min(caxis), max(caxis)
     else:
         cmn, cmx = sds.min(), sds.max()
+    # m.drawparallels(parallels, fontsize=10, linewidth=0.25, dashes=[7, 15],
+    #                  color='k', labels=[1, 0, 1, 1])
+    # m.drawmeridians(meridians, fontsize=10, dashes=[7, 15],
+    #                  linewidth=0.3, color='k', labels=[1, 1, 0, 1])
+    #ncl = 150
+    #if log10 is True:
+    #    norm = colors.LogNorm(vmin=cmn, vmax=cmx)
+    #else:
+     #   bounds = np.linspace(cmn, cmx, ncl)
+     #   norm = colors.BoundaryNorm(boundaries=bounds, ncolors=ncl)
 
-    ncl = 150
-    if log10 is True:
-        norm = colors.LogNorm(vmin=cmn, vmax=cmx)
-    else:
-        bounds = np.linspace(cmn, cmx, ncl)
-        norm = colors.BoundaryNorm(boundaries=bounds, ncolors=ncl)
-
-    p = m.pcolor(x2d, y2d, sds, norm=LogNorm(vmin=0.1, vmax=70), cmap='jet')
+    p = m.pcolor(x2d, y2d, sds, vmin=cmn,vmax=cmx, cmap='rainbow')
 
     if title is not None:
         plt.title(title)
 
     # divider = make_axes_locatable(ax)
     # cax = divider.append_axes('vertical', size="3%", pad=0.05)
-    cax = plt.axes([0.85, 0.1, 0.05, 0.7])  # setup colorbar axes
+    #cax = plt.axes([cmn, 0, cmx])  # setup colorbar axes
 
-    cb = plt.colorbar(format='%5.2f', cax=cax)  # draw colorbar
-    if label is not None:
-        cb.set_label("%s" % label)
-    plt.sca(ax)  # make the original axes current again
-    plt.clim(cmn, cmx)
+    cb = m.colorbar(p,location="right",size="5%",pad=0.1)  # draw colorbar
+    #if label is not None:
+    # cb.set_label("%s" % label)
+    # plt.sca(ax)  # make the original axes current again
+    # plt.clim(cmn, cmx)
+    #unit='Elevation to the sea level'
+    #cb.set_label(unit, rotation=270, labelpad=10.0, fontsize=10)
+    cb.ax.tick_params(labelsize=10)
 
     m.drawcoastlines()
     m.drawcountries()
+    m.fillcontinents()
     plt.show()
 
     if save_image is not None:
         plt.savefig(save_image, dpi=dpi, facecolor='w', edgecolor='w', orientation='portrait')
         plt.show()
         plt.close()
-# code as is provided by the JAXA SGLI Team
+
 def creategrid(min_lon, max_lon, min_lat, max_lat, cell_size_deg, mesh=False):
 #Output grid within geobounds and specifice cell size
 #cell_size_deg should be in decimal degrees’’’

@@ -10,8 +10,8 @@ import geopandas as gpd
 import h5py
 import os
 import glob
-os.chdir('I:/Nagoya University/Project/Seto/requested_files')
-path='I:/Nagoya University/Project/Seto/requested_files/'
+os.chdir('I:/Nagoya University/Project/Seto/MODIS')
+path='I:/Nagoya University/Project/Seto/MODIS/'
 datalist=glob.glob('*.nc')
 minlat = 32.5
 minlon = 130.5
@@ -112,13 +112,13 @@ for j in range(1):
         var=value
 
 
-    group.close
+    #group.close
     #存储还是有问题
     #先不管了
 
     # copy axis from original dataset
     #time= nc_file.time_coverage_end
-    lon = lons
+    lon= lons
     lat= lats
     #vout= variables
 

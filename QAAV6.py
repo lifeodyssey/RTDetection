@@ -76,7 +76,7 @@ def QAAv6(Rrs):
             ag443=((a[0]-zeta*a[1])/(xi-zeta))-((aw[0]-zeta*aw[1])/(xi-zeta))
             adg[i]=ag443*np.exp(-S*(Lambda[i]-443))
             aph[i]=a[i]-adg[i]-aw[i]
-        return [bbp]
+        return bbp
 
 
 

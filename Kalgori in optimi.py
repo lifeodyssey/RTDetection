@@ -5,37 +5,22 @@ from geo_Collection import geo_web as gs
 from QAAV6 import  QAAv6
 import os
 import glob
+import  datetime
 import warnings
 warnings.filterwarnings("ignore")#用来去掉Warning,
 import pandas as pd
 import matplotlib.pyplot as plt
 os.chdir('I:/Nagoya University/Project/Seto/MODIS')
 path='I:/Nagoya University/Project/Seto/MODIS/'
-datalist=glob.glob('20180723*.nc')
-# minlat = 32.5
-# minlon = 130.5
-# maxlat = 35
-# maxlon = 136
-#Full Seto-Inland Sea
-# minlat = 32.65
-# minlon = 131.39
-# maxlat = 33.48
-# maxlon = 132.77
-#UWAJIMA
-# minlat = 34.18
-# minlon = 134.00
-# maxlat = 34.88
-# maxlon = 135.59
-#OSAKA
-#Specific for 20150715
-minlat = 33.07428
-minlon = 131.927472
-maxlat = 33.473592
-maxlon = 132.625198
-L=len(datalist)
+datalist=glob.glob('*.nc')
+minlat = 32.5
+minlon = 130.5
+maxlat = 35
+maxlon = 136
 #area of full seto-inland sea
-#for j in range(len(datalist)):
-for a1 in range(L):
+for a1 in range(1):
+#for a1 in range(len(datalist)):
+    start=datetime.datetime.now()
     file=datalist[a1]
     filename = path + file
     #print(filename)
@@ -51,7 +36,7 @@ for a1 in range(L):
         var=variables[i][:]
         np.where(var<=0,var,np.nan)
         if i!='l2_flags':
-            var_re, grid = gs.swath_resampling(var, lon, lat, x, y, 3000)  # 1 km grid
+            var_re, grid = gs.swath_resampling(var, lon, lat, x, y, 1000)  # 1 km grid
             #var_re=var_re.filled()
             variables[i] = var_re
         else:
@@ -60,8 +45,10 @@ for a1 in range(L):
 
     lons=grid.lons
     lats=grid.lats
-    #lons=x
-    #lats=y
+    end1=datetime.datetime.now()
+    print('Resample')
+    print(end1-start)
+
     #Lambda=np.array([412, 443, 469,488,531,547,555,645,667,678])
     # Rrs_412=variables['Rrs_412'].filled()
     # Rrs_443 = variables['Rrs_443'].filled()
@@ -85,7 +72,7 @@ for a1 in range(L):
     Rrs_645 = variables['Rrs_645']
     Rrs_667 = variables['Rrs_667']
     Rrs_678= variables['Rrs_678']
-    #nflh=variables['nflh']
+    nflh=variables['nflh']
     chl=variables['chlor_a']
     # chl[chl<0]=np.nan
     # Rrs_412[Rrs_412<0]=np.nan
@@ -98,26 +85,7 @@ for a1 in range(L):
     # Rrs_645[Rrs_645 < 0] = np.nan
     # Rrs_667[Rrs_678 < 0] = np.nan
     # Rrs_678[Rrs_678 < 0] = np.nan
-    gs.plot_geo_image(Rrs_412, lons, lats, log10=False, title='Rrs412' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs412' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_443, lons, lats, log10=False, title='Rrs443' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs443' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_469, lons, lats, log10=False, title='Rrs469' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs469' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_488, lons, lats, log10=False, title='Rrs488' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs488' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_531, lons, lats, log10=False, title='Rrs531' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs531' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_547, lons, lats, log10=False, title='Rrs547' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs547' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_555, lons, lats, log10=False, title='Rrs555' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs555' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_645, lons, lats, log10=False, title='Rrs645' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs645' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_667, lons, lats, log10=False, title='Rrs667' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs667' + nc_file.time_coverage_end[0:13])
-    gs.plot_geo_image(Rrs_678, lons, lats, log10=False, title='Rrs678' + nc_file.time_coverage_end[0:13],
-                      save_image='Rrs678' + nc_file.time_coverage_end[0:13])
+
 
 
 
@@ -157,20 +125,27 @@ for a1 in range(L):
     Imagebbp=np.zeros(np.shape(lats))
 
     Imagebbp[(chl>1.5) & (bbp555QAA<bbpmorel)]=5 #Karenia
-    gs.plot_geo_image(Imagebbp,lons,lats,log10=False,title='Result by Cannizzaro et al(2004,2008,2009), bbpratio '+nc_file.time_coverage_end[0:13],caxis=[0.1,6],save_image='Result by Cannizzaro et al(2004,2008,2009) in Uwajima'+nc_file.time_coverage_end[0:13])
-# TODO UwaJIMA再跑一次
+    #plt.figure()
+    #plt.subplot(2,3,1)
+    gs.plot_geo_image(Imagebbp,lons,lats,log10=False,title='Result by Cannizzaro et al(2004,2008,2009)'+nc_file.time_coverage_end[0:13],caxis=[0.1,6])
+    end2 = datetime.datetime.now()
+    print('bbp ratio')
+    print(end2 - end1 )
 #
 # #nLw ratio
 # #Estimates the relationship between water leaving radiance (Lw(551)) and CHL.
 # # If Lw(551) is lower than the backscattering calculated at λ = 550 nm (bbp MOREL(550); Morel, 1988)as function of CHL then the pixel is classified as a K. brevis bloom.
     F0=[172.912,187.622,205.878,194.933,185.747,186.539,183.869,157.811,152.255,148.052]
     nlw555=Rrs_555*F0[6]
-# #     Imagenlw=np.zeros(np.shape(lats))
+    Imagenlw=np.zeros(np.shape(lats))
 # #TODO 有待商议
-# #     Imagenlw[(chl>1.5)&(nlw555<bbpmorel)]=5
-# #     gs.plot_geo_image(Imagenlw, lons, lats, log10=False,
-# #                       title='Result by Carvalho et al(2008,2011)' + nc_file.time_coverage_end[0:13],
-# #                       caxis=[0.1, 6], save_image='Result by Carvalho et al(2008,2011)' + nc_file.time_coverage_end[0:13])
+    Imagenlw[(chl>1.5)&(nlw555<bbpmorel)]=5
+    #plt.subplot(2,3,2)
+    gs.plot_geo_image(Imagenlw, lons, lats, log10=False,
+                      title='Result by Carvalho et al(2008,2011)' + nc_file.time_coverage_end[0:13])
+    end3 = datetime.datetime.now()
+    print('nlw ration')
+    print(end3 - end2 )
 #
 #
 # #Spectral shape at 490 nm (SS_490)
@@ -183,9 +158,12 @@ for a1 in range(L):
     SS_90 = nlw488-nlw443-(nlw531-nlw443)*((488-443)/(531-443))
     ImageSS=np.zeros(np.shape(lats))
     ImageSS[SS_90<0]=5
+    #plt.subplot(2,3,3)
     gs.plot_geo_image(ImageSS, lons, lats, log10=False,
-                      title='Result by Tominson et al(2009)' +'\n'+ nc_file.time_coverage_end[0:13],
-                      caxis=[0, 6], save_image='Result by Tominson et al(2009)in ,SS' + nc_file.time_coverage_end[0:13])
+                      title='Result by Tominson et al(2009)' +'\n'+ nc_file.time_coverage_end[0:13])
+    end4 = datetime.datetime.now()
+    print('SS')
+    print(end4 - end3 )
     #gs.plot_geo_image(ImageEKO,lonmlat)
 # #RBD
 # #Takes advantage of the high fluorescence properties of dinoflagellate blooms.
@@ -196,10 +174,12 @@ for a1 in range(L):
     RBD=nlw678-nlw667
     ImageRBD=np.zeros(np.shape(lats))
     ImageRBD[RBD>0.015]=5
+    #plt.subplot(2,3,4)
     gs.plot_geo_image(ImageRBD, lons, lats, log10=False,
-                      title='Result by Amin, Gilerson et al(2009,RBD)' + '\n' + nc_file.time_coverage_end[0:13],
-                      caxis=[0.1, 6], save_image='Result by Amin, Gilerson et al(2009,RBD)in Uwajima' + nc_file.time_coverage_end[0:13])
-#
+                      title='Result by Amin, Gilerson et al(2009)(RBD)' + '\n' + nc_file.time_coverage_end[0:13])
+    end5 = datetime.datetime.now()
+    print('RBD')
+    print(end5 - end4 )
 #
 # #RBD–KBBI
 # #Combines the high fluorescence and low backscattering properties of K. brevis blooms in 2 main equations:
@@ -209,9 +189,12 @@ for a1 in range(L):
     KBBI=(nlw678-nlw667)/(nlw678+nlw667)
     ImageKBBI = np.zeros(np.shape(lats))
     ImageKBBI[(RBD > 0.015)&(KBBI>0.3*RBD)] = 5
+    #plt.subplot(2,3,5)
     gs.plot_geo_image(ImageKBBI,lons, lats, log10=False,
-                      title='Result by Amin, Gilerson et al(2009,RBD-KBBI)' + '\n' + nc_file.time_coverage_end[0:13],
-                      caxis=[0.1, 6], save_image='Result by Amin, Gilerson et al(2009,RBD-KBBI)in Uwajima' + nc_file.time_coverage_end[0:13])
+                      title='Result by Amin, Gilerson et al(2009)(RBD-KBBI)' + '\n' + nc_file.time_coverage_end[0:13])
+    end6 = datetime.datetime.now()
+    print('RBD-KBBI')
+    print(end6 - end5 )
 #EKO
 #nlw Peak at 547
 #NOT！nlw443-412 slope>nlw488-443slope & nlw488-443>nlw547-488slope
@@ -234,14 +217,16 @@ for a1 in range(L):
     # TODO There must be some problem with EKO's method!
     for i in range(len(y)):
         for j in range(len(x)):
-            if(nlw547[i,j]>max(nlw412[i,j],nlw443[i,j],nlw488[i,j],nlw555[i,j],nlw645[i,j],nlw667[i,j])):
-                if (not ((nlw443_412slope[i, j] > nlw488_443slope[i, j]) & (
+            if(not (np.ma.is_masked(nlw547[1, 1]))):
+                if(nlw547[i,j]>max(nlw412[i,j],nlw443[i,j],nlw488[i,j],nlw555[i,j],nlw645[i,j],nlw667[i,j])):
+                    if (not ((nlw443_412slope[i, j] > nlw488_443slope[i, j]) & (
                         nlw488_443slope[i, j] > nlw547_488slope[i, j]))):
-                    if (not (nlw547_412slope[i, j]) > -0.0003 * (
+                        if (not (nlw547_412slope[i, j]) > -0.0003 * (
                             (np.log(chl[i, j])) ** 2) + 0.0024 * np.log(chl[i, j]) - 0.00005):
-                        if (not (nlw547[i, j] > 0.8)):
-                            if (not (abs(nlw547_488slope[i, j] - nlw488_412slope[i, j]) > 0.006)):
-                                ImageEKO[i, j] = 5
+                            if (not (nlw547[i, j] > 0.8)):
+                                if (not (abs(nlw547_488slope[i, j] - nlw488_412slope[i, j]) > 0.006)):
+                                    ImageEKO[i, j] = 5
+
     #gs.plot_geo_image(ImageEKO, lons, lats, log10=False,
                                    #title='EKO1',
                                    #caxis=[0.1, 6])
@@ -251,9 +236,34 @@ for a1 in range(L):
                 #         if(not(nlw547[i,j]>0.8)):
                 #             if(not(abs(nlw547_488slope[i,j]-nlw488_412slope[i,j])>0.006)):
                 #                 ImageEKO[i,j]=5
+    #plt.subplot(2,3,6)
     gs.plot_geo_image(ImageEKO,lons, lats, log10=False,
-                       title='Result by Eko Siswanto et al(2013)' + '\n' + nc_file.time_coverage_end[0:13],
-                       caxis=[0, 6], save_image='Result by Eko Siswanto et al(2013)in Uwajima' + nc_file.time_coverage_end[0:13])
+                       title='Result by Eko Siswanto et al(2013)' + '\n' + nc_file.time_coverage_end[0:13])
+    #plt.savefig('subplot'+nc_file.time_coverage_end[0:13])
+    end7 = datetime.datetime.now()
+    print('EKO')
+    print(end7 - end6 )
 
-    print(print('percent: {:.2%}'.format((a1+1)/L)))
+
     #nFLH
+# 2008-07-26T03:54:59.771Z
+# Resample
+# 0:00:02.266570
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 5.000]
+# bbp ratio
+# 0:03:18.745898
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 5.000]
+# nlw ration
+# 0:00:38.067859
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 5.000]
+# SS
+# 0:00:37.835756
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 5.000]
+# RBD
+# 0:00:38.416747
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 5.000]
+# RBD-KBBI
+# 0:00:39.070265
+# Lat: [32.510, 35.000] | Lon: [130.500, 135.990] | SDS: [0.000, 0.000]
+# EKO
+# 0:00:43.163418
