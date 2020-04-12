@@ -1,8 +1,21 @@
-
+from scipy.interpolate import Akima1DInterpolator as Akima
 import numpy as np
-
+from deco import *
 import math as m
 
+
+# wavelengths = {
+#     'OLI'   : [442.98, 482.49, 561.33, 654.61],
+#     'MSI'   : [443.93, 496.54, 560.01, 664.45],
+#     'OLCI'  : [411.3999939, 442.63000488, 490.07998657, 510.07000732, 560.05999756, 619.97998047, 664.85998535, 673.61999512, 681.15002441], # 9 band insitu
+#     'OLCI2' : [400, 412.5, 442.5, 490, 510, 560, 620, 665, 673.75, 681.25, 708.75, 753.75, 761.25, 764.375, 767.5, 778.75], # 16 band LUT
+#     'VI'    : [412.49, 444.17, 486.81, 549.99, 670.01],
+#     'AER'   : [412, 442, 490, 530, 551, 668],
+#     'MOSIA' : [412, 443, 469,488,531,547,555,645,667,678],
+#     'GOCI'  : [412, 443, 490, 555, 660, 680],
+#     'SGLI'  : [380,412,443,490,530,565,673.5]
+#}
+#@concurrent
 def QAAv6(Rrs):
     #acording to Lee,QAAv6
     #write by Zhou,20191130
@@ -19,6 +32,7 @@ def QAAv6(Rrs):
 # B8: 645 nm 7
 # B9: 667 nm 8
 # B10: 678 nm 9
+
     Lambda=np.array([412, 443, 469,488,531,547,555,645,667,678])
     nbands=np.shape(Lambda)[0]
 
@@ -76,7 +90,7 @@ def QAAv6(Rrs):
             ag443=((a[0]-zeta*a[1])/(xi-zeta))-((aw[0]-zeta*aw[1])/(xi-zeta))
             adg[i]=ag443*np.exp(-S*(Lambda[i]-443))
             aph[i]=a[i]-adg[i]-aw[i]
-        return bbp
+        return bbp,a
 
 
 

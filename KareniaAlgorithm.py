@@ -4,13 +4,16 @@ from collections  import OrderedDict
 from geo_Collection import geo_web as gs
 from QAAV6 import  QAAv6
 import os
+
+os.environ['PROJ_LIB'] = '/Users/zhenjia/opt/anaconda3/share/proj'
+
 import glob
 import warnings
-warnings.filterwarnings("ignore")#用来去掉Warning,
+warnings.filterwarnings("ignore")#用来去arning,
 import pandas as pd
 import matplotlib.pyplot as plt
-os.chdir('I:/Nagoya University/Project/Seto/MODIS')
-path='I:/Nagoya University/Project/Seto/MODIS/'
+os.chdir('/Users/zhenjia/Desktop/Project/Seto/MODIS')
+path='/Users/zhenjia/Desktop/Project/Seto/MODIS/'
 datalist=glob.glob('20180723*.nc')
 # minlat = 32.5
 # minlon = 130.5
@@ -256,4 +259,14 @@ for a1 in range(L):
                        caxis=[0, 6], save_image='Result by Eko Siswanto et al(2013)in Uwajima' + nc_file.time_coverage_end[0:13])
 
     print(print('percent: {:.2%}'.format((a1+1)/L)))
+
     #nFLH
+    #　shen 2019
+    #　red tide detection index:rdi=(1/Rrs1-1/Rrs2)*Rrs3
+    # (a) the λ1, λ2, and λ3 of Eq. (1) were set using the MERIS bands of 665, 560, and 753 nm,
+    # (b) the λ1, λ2, and λ3 were set using the MODIS bands of 667, 555, and 748 nm, and
+    # (c) the λ1, λ2, and λ3 were set using the GOCI bands of 660, 555, and 745 nm.
+    #　0.14~0.16
+    # R_slope =tan−1 (100×(1 – (Rrs(λ2)/ Rrs(λ1))) / (λ2–λ1))
+    # λ1 represents the baseline wavelength in the range of 550–570 nm, and λ2 is proposed to be a wavelength in the range of 570–670 nm.
+    #rrs slope 0.5 original paper do not included

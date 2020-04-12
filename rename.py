@@ -9,9 +9,11 @@ import geopandas as gpd
 import h5py
 import os
 import glob
-os.chdir('I:/Nagoya University/Project/Seto/GOCI')
-path='I:/Nagoya University/Project/Seto/GOCI/'
-datalist=glob.glob('*.nc')
+os.chdir('/Users/zhenjia/Desktop/Project/Seto/MODIS/l1/l2_lac')
+path = '/Users/zhenjia/Desktop/Project/Seto/MODIS/l1/l2_lac/'
+# os.chdir('I:/Nagoya University/Project/Seto/GOCI')
+# path='I:/Nagoya University/Project/Seto/GOCI/'
+datalist=glob.glob('*.hdf')
 L=len(datalist)
 for j in range(L):
     file=datalist[j]

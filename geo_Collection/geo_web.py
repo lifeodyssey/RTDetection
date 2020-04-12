@@ -6,7 +6,7 @@ from matplotlib import colors
 import math
 from scipy.interpolate import RectSphereBivariateSpline
 from matplotlib.colors import LogNorm
-
+#from  deco import *
 def swath_resampling(src_data: np.ma.array, src_lon: np.array, src_lat: np.array,
                      trg_lon: np.array, trg_lat: np.array, search_radius: float):
     if len(trg_lon.shape) == 1:
@@ -27,11 +27,11 @@ def swath_resampling(src_data: np.ma.array, src_lon: np.array, src_lat: np.array
                                                  fill_value=np.nan, radius_of_influence=search_radius)
     return result, grid_def
 
-
+#@concurrent
 def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bool = True, title: str = None,
                    label: str = None,
                    caxis: list = None, lon_range: list = None, lat_range: list = None, save_image: str = None,
-                   dpi: int = 100):
+                   dpi: int = 400):
     if len(lon.shape) == 1:
         print('MeshGridding...')
         lon, lat = np.meshgrid(lon, lat)
@@ -78,7 +78,7 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
      #   bounds = np.linspace(cmn, cmx, ncl)
      #   norm = colors.BoundaryNorm(boundaries=bounds, ncolors=ncl)
 
-    p = m.pcolor(x2d, y2d, sds, vmin=cmn,vmax=cmx, cmap='rainbow')
+    p = m.pcolor(x2d, y2d, sds, vmin=cmn,vmax=cmx, cmap='jet')
 
     if title is not None:
         plt.title(title)
@@ -99,7 +99,7 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
     m.drawcoastlines()
     m.drawcountries()
     m.fillcontinents()
-    plt.show()
+    #plt.show()
 
     if save_image is not None:
         plt.savefig(save_image, dpi=dpi, facecolor='w', edgecolor='w', orientation='portrait')
