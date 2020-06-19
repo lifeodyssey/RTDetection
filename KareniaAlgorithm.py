@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 os.chdir('/Users/zhenjia/Desktop/Project/Seto/MODIS')
 path='/Users/zhenjia/Desktop/Project/Seto/MODIS/'
-datalist=glob.glob('20180723*.nc')
+datalist=glob.glob('20180725*.nc')
 # minlat = 32.5
 # minlon = 130.5
 # maxlat = 35
@@ -237,7 +237,7 @@ for a1 in range(L):
     # TODO There must be some problem with EKO's method!
     for i in range(len(y)):
         for j in range(len(x)):
-            if(nlw547[i,j]>max(nlw412[i,j],nlw443[i,j],nlw488[i,j],nlw555[i,j],nlw645[i,j],nlw667[i,j])):
+            if nlw547[i, j]>max(nlw412[i, j], nlw443[i, j], nlw488[i, j], nlw555[i, j], nlw645[i, j], nlw667[i, j]):
                 if (not ((nlw443_412slope[i, j] > nlw488_443slope[i, j]) & (
                         nlw488_443slope[i, j] > nlw547_488slope[i, j]))):
                     if (not (nlw547_412slope[i, j]) > -0.0003 * (

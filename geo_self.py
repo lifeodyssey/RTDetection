@@ -1,32 +1,181 @@
-import pyresample
+import netCDF4 as nc4
 import numpy as np
+from collections import OrderedDict
+from geo_Collection import geo_web as gs
+from QAAV6 import QAAv6
+import os
+import glob
+import datetime
+import warnings
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 from matplotlib import colors
+from matplotlib.colors import ListedColormap
+import earthpy.plot as ep
 import math
 from scipy.interpolate import RectSphereBivariateSpline
+from matplotlib.colors import LogNorm
 
-def swath_resampling(src_data: np.ma.array, src_lon: np.array, src_lat: np.array,
-                     trg_lon: np.array, trg_lat: np.array, search_radius: float):
-    if len(trg_lon.shape) == 1:
-        grid_def = pyresample.geometry.SwathDefinition(*np.meshgrid(trg_lon, trg_lat))
+import concurrent.futures
+import math
+from deco import *
+import multiprocessing as mp
+
+# from multiprocess import Pool
+warnings.filterwarnings("ignore")  # 用来去掉Warning,
+os.environ['PROJ_LIB'] = '/Users/zhenjia/opt/anaconda3/share/proj'
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# os.chdir('I:/Nagoya University/Project/Seto/MODIS')
+# path='I:/Nagoya University/Project/Seto/MODIS/'
+os.chdir('/Users/zhenjia/Desktop/Project/Seto/MODIS/l1/l2_lac')
+path = '/Users/zhenjia/Desktop/Project/Seto/MODIS/l1/l2_lac/'
+datalist = glob.glob('2008*.nc')
+# 20110715 Uwajima
+# 20180723 Osaka
+minlat = 32.5
+minlon = 130
+maxlat = 35
+maxlon = 136
+# area of full seto-inland sea
+# # # for a1 in range(1):
+# minlat = 32.32
+# minlon = 131.39
+# maxlat = 33.48
+# maxlon = 132.77
+
+# # bun go si i to
+# minlat = 33.88
+# minlon = 132.85
+# maxlat = 34.73
+# maxlon = 133.837
+# middle
+# minlat = 34.18
+# minlon = 134.00
+# maxlat = 34.88
+# maxlon = 135.59
+# # Osaka
+L = len(datalist)
+initime = datetime.datetime.now()
+#
+# # plt.subplot(2,3,3)
+# # with concurrent.futures.ProcessPoolExecutor() as executor:
+# a1 = np.arange(len(datalist))
+#
+#
+# #
+#
+#
+# def main(a1):
+file = datalist[0]
+filename = path + file
+nc_file = nc4.Dataset(filename, 'r')
+print(nc_file.time_coverage_end)
+lon = nc_file.groups['navigation_data'].variables['longitude'][:]
+lat = nc_file.groups['navigation_data'].variables['latitude'][:]
+variables = nc_file.groups['geophysical_data'].variables
+
+x = np.arange(minlon, maxlon, 0.01)  # 1 km grid,
+y = np.arange(maxlat, minlat, -0.01)
+
+for i in variables:
+    var = variables[i][:]
+    np.where(var <= 0, var, np.nan)
+    if i != 'l2_flags':
+        var_re, grid = gs.swath_resampling(var, lon, lat, x, y, 1000)  # 1 km grid
+        # var_re=var_re.filled()
+        if np.ma.is_mask(var_re):
+            var_re = var_re.filled(np.nan)
+            var_re[var_re == -32767.0] = np.nan
+        variables[i] = var_re
     else:
-        grid_def = pyresample.geometry.SwathDefinition(lons=trg_lon, lats=trg_lat)
+        # var_re = var_re.filled()
+        variables[i] = var
 
-    # source grid with original swath data
-    swath_def = pyresample.geometry.SwathDefinition(lons=src_lon, lats=src_lat)
+lons = grid.lons
+lats = grid.lats
+Rrs_412 = variables['Rrs_412']
+Rrs_443 = variables['Rrs_443']
+Rrs_469 = variables['Rrs_469']
+Rrs_488 = variables['Rrs_488']
+Rrs_531 = variables['Rrs_531']
+Rrs_547 = variables['Rrs_547']
+Rrs_555 = variables['Rrs_555']
+Rrs_645 = variables['Rrs_645']
+Rrs_667 = variables['Rrs_667']
+Rrs_678 = variables['Rrs_678']
+Rrs_748 = variables['Rrs_748']
+# F0 = [172.912, 187.622, 205.878, 194.933, 185.747, 186.539, 183.869, 157.811, 152.255, 148.052, 128.065]
+# nlw412 = Rrs_412 * F0[0]
+# nlw443 = Rrs_443 * F0[1]
+# nlw469 = Rrs_469 * F0[2]
+# nlw488 = Rrs_488 * F0[3]
+# nlw531 = Rrs_531 * F0[4]
+# nlw547 = Rrs_547 * F0[5]
+# nlw555 = Rrs_555 * F0[6]
+# nlw645 = Rrs_645 * F0[7]
+# nlw667 = Rrs_667 * F0[8]
+# nlw678 = Rrs_678 * F0[9]
+# nlw748 = Rrs_748 * F0[10]
+# # nlw412 = variables['nLw_412']
+# # nlw443 = variables['nLw_443']
+# # nlw469 = variables['nLw_469']
+# # nlw488 = variables['nLw_488']
+# # nlw531 = variables['nLw_531']
+# # nlw547 = variables['nLw_547']
+# # nlw555 = variables['nLw_555']
+# # nlw645 = variables['nLw_645']
+# # nlw667 = variables['nLw_667']
+# # nlw678 = variables['nLw_678']
+# # nlw748 = variables['nLw_748']
+#
+# # Rrs_412 = variables['Rrs_412'].filled(np.nan)
+# # Rrs_443 = variables['Rrs_443'].filled(np.nan)
+# # Rrs_469 = variables['Rrs_469'].filled(np.nan)
+# # Rrs_488 = variables['Rrs_488'].filled(np.nan)
+# # Rrs_531 = variables['Rrs_531'].filled(np.nan)
+# # Rrs_547 = variables['Rrs_547'].filled(np.nan)
+# # Rrs_555 = variables['Rrs_555'].filled(np.nan)
+# # Rrs_645 = variables['Rrs_645'].filled(np.nan)
+# # Rrs_667 = variables['Rrs_667'].filled(np.nan)
+# # Rrs_678 = variables['Rrs_678'].filled(np.nan)
+# # Rrs_748 = variables['Rrs_748'].filled(np.nan)
+# # nlw412 = variables['nLw_412'].filled(np.nan)
+# # nlw443 = variables['nLw_443'].filled(np.nan)
+# # nlw469 = variables['nLw_469'].filled(np.nan)
+# # nlw488 = variables['nLw_488'].filled(np.nan)
+# # nlw531 = variables['nLw_531'].filled(np.nan)
+# # nlw547 = variables['nLw_547'].filled(np.nan)
+# # nlw555 = variables['nLw_555'].filled(np.nan)
+# # nlw645 = variables['nLw_645'].filled(np.nan)
+# # nlw667 = variables['nLw_667'].filled(np.nan)
+# # nlw678 = variables['nLw_678'].filled(np.nan)
+# # nlw748 = variables['nLw_748'].filled(np.nan)
+Rrs = np.array([
+    Rrs_412,
+    Rrs_443,
+    Rrs_469,
+    Rrs_488,
+    Rrs_531,
+    Rrs_547,
+    Rrs_555,
+    Rrs_645,
+    Rrs_667,
+    Rrs_678])
+# nflh = nlw678 - (70 / 81) * nlw667 - (11 / 81) * nlw748
+chl = variables['chlor_a']
 
-    # resample (here we use nearest. Bilinear, gaussian and custom defined methods are available)
-    # for more, visit https://pyresample.readthedocs.io/en/latest/
-    result = pyresample.kd_tree.resample_nearest(swath_def, src_data, grid_def, epsilon=0.5,
-                                                 fill_value=None, radius_of_influence=search_radius)
-    return result, grid_def
+wt = np.ma.array(np.zeros(np.shape(chl)))
+wt[chl > 10] = 3
+wt[(chl < 10) & (chl > 5)] = 2
+wt[(chl < 5)] = 1
+wt[chl.mask] = 0
 
 
-def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bool = True, title: str = None,
-                   label: str = None,
-                   caxis: list = None, lon_range: list = None, lat_range: list = None, save_image: str = None,
-                   dpi: int = 100):
+def plot_WT_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, title: str = None,
+                  lon_range: list = None, lat_range: list = None, save_image: str = None,
+                  dpi: int = 400):
     if len(lon.shape) == 1:
         print('MeshGridding...')
         lon, lat = np.meshgrid(lon, lat)
@@ -41,94 +190,58 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
     if (lon_range is not None) and (lat_range is not None):
         m = Basemap(llcrnrlon=min(lon_range), llcrnrlat=min(lat_range),
                     urcrnrlon=max(lon_range), urcrnrlat=max(lat_range),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
     else:
         m = Basemap(llcrnrlon=lon.min(), llcrnrlat=lat.min(),
                     urcrnrlon=lon.max(), urcrnrlat=lat.max(),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='tmerc')
     x2d, y2d = m(lon, lat)
 
-    fig = plt.figure(figsize=(8, 8 * m.aspect))
-    ax = fig.add_axes([0.08, 0.1, 0.7, 0.7], facecolor='white')
-    # changed to facecolor 8 October 2019
+    fig = plt.figure(figsize=(12, 12 * m.aspect))
+    ax = fig.add_axes([0.08, 0.1, 0.7, 0.7], facecolor='w')
 
     if (lon_range is not None) and (lat_range is not None):
-        parallels = np.linspace(min(lat_range), max(lat_range), 4)
-        meridians = np.linspace(min(lon_range), max(lon_range), 3)
+        parallels = np.arange(min(lat_range), max(lat_range), 0.5)
+        meridians = np.arange(min(lon_range), max(lon_range), 0.5)
     else:
-        parallels = meridians = None
-
-    if caxis is not None:
-        cmn, cmx = min(caxis), max(caxis)
-    else:
-        cmn, cmx = sds.min(), sds.max()
-
-    ncl = 150
-    if log10 is True:
-        norm = colors.LogNorm(vmin=cmn, vmax=cmx)
-    else:
-        bounds = np.linspace(cmn, cmx, ncl)
-        norm = colors.BoundaryNorm(boundaries=bounds, ncolors=ncl)
-
-    p = m.pcolor(x2d, y2d, sds, norm=norm, cmap=plt.cm.jet)
+        parallels = np.arange(lat.min(), lat.max(), 0.5)
+        meridians = np.arange(lon.min(), lon.max(), 0.5)
+    labels = ['No Data',
+              'Other Water',
+              'Other Phytoplankton',
+              'K.mikimotoi Bloom']
+    colors = ['w',
+              'deepskyblue',
+              'g',
+              'r'
+              ]
+    cmap = ListedColormap(colors)
+    p = m.pcolor(x2d, y2d, sds, cmap=cmap)
 
     if title is not None:
-        plt.title(title)
+        plt.title(title, fontsize=24)
 
-    # divider = make_axes_locatable(ax)
-    # cax = divider.append_axes('vertical', size="3%", pad=0.05)
-    cax = plt.axes([0.85, 0.1, 0.05, 0.7])  # setup colorbar axes
-
-    cb = plt.colorbar(format='%5.2f', cax=cax)  # draw colorbar
-    if label is not None:
-        cb.set_label("%s" % label)
-    plt.sca(ax)  # make the original axes current again
-    plt.clim(cmn, cmx)
+    plt.plot([], [], label=labels[0], color=colors[0])
+    plt.plot([], [], label=labels[1], color=colors[1])
+    plt.plot([], [], label=labels[2], color=colors[2])
+    plt.plot([], [], label=labels[3], color=colors[3])
+    plt.legend()
 
     m.drawcoastlines()
     m.drawcountries()
+    m.fillcontinents(color='lightgray')
+    m.drawrivers()
+
+    m.drawmeridians(meridians, fontsize=10, linewidth=0.25, dashes=[7, 15],
+                    color='k', labels=[1, 0, 1, 1])
+    m.drawparallels(parallels, fontsize=10, dashes=[7, 15],
+                    linewidth=0.3, color='k', labels=[1, 1, 0, 1])
     plt.show()
 
     if save_image is not None:
         plt.savefig(save_image, dpi=dpi, facecolor='w', edgecolor='w', orientation='portrait')
         plt.show()
         plt.close()
-# code as is provided by the JAXA SGLI Team
-def creategrid(min_lon, max_lon, min_lat, max_lat, cell_size_deg, mesh=False):
-#Output grid within geobounds and specifice cell size
-#cell_size_deg should be in decimal degrees’’’
 
-    min_lon = math.floor(min_lon)
-    max_lon = math.ceil(max_lon)
-    min_lat = math.floor(min_lat)
-    max_lat = math.ceil(max_lat)
-    lon_num = (max_lon - min_lon)/cell_size_deg
-    lat_num = (max_lat - min_lat)/cell_size_deg
-    grid_lons = np.zeros(lon_num) # fill with lon_min
-    grid_lats = np.zeros(lat_num) # fill with lon_max
-    grid_lons = grid_lons + (np.assary(range(lon_num))*cell_size_deg)
-    grid_lats = grid_lats + (np.assary(range(lat_num))*cell_size_deg)
-    grid_lons, grid_lats = np.meshgrid(grid_lons, grid_lats)
-    grid_lons = np.ravel(grid_lons)
-    grid_lats = np.ravel(grid_lats)
-    #if mesh = True:
-    # grid_lons = grid_lons
-    # grid_lats = grid_lats
-    return grid_lons, grid_lats
-def geointerp(lats,lons,data,grid_size_deg, mesh=False):
-#We want to interpolate it to a global x-degree grid’’’
-    deg2rad = np.pi/180.
-    new_lats = np.linspace(grid_size_deg, 180, 180/grid_size_deg)
-    new_lons = np.linspace(grid_size_deg, 360, 360/grid_size_deg)
-    new_lats_mesh, new_lons_mesh = np.meshgrid(new_lats*deg2rad, new_lons*deg2rad)
-    #We need to set up the interpolator object’’’
-    lut = RectSphereBivariateSpline(lats*deg2rad, lons*deg2rad, data)
-    #Finally we interpolate the data. The RectSphereBivariateSpline
-    #object only takes 1-D arrays as input, therefore we need to do some reshaping.’’’
-    new_lats = new_lats_mesh.ravel()
-    new_lons = new_lons_mesh.ravel()
-    data_interp = lut.ev(new_lats,new_lons)
-    if mesh == True:
-        data_interp = data_interp.reshape((360 / grid_size_deg,
-                                           180 / grid_size_deg)).T
-        return new_lats / deg2rad, new_lons / deg2rad, data_interp
+
+plot_WT_image(wt, lons, lats)

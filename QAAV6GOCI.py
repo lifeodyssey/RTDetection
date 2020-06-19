@@ -65,7 +65,7 @@ def QAAv6(Rrs):
         adg[i]=ag443*np.exp(-S*(Lambda[i]-443))
         aph[i]=a[i]-adg[i]-aw[i]
 
-    return [rrs,u,a,adg,aph,bbp]
+    return bbp
 
 
 
