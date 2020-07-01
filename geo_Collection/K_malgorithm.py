@@ -11,7 +11,7 @@ def bbpratio(chl, bbp555QAA, nflh, Rrs555):
 
     Imagebbp[chl.mask] = 0
     Imagebbp[(nflh > 0.02) & (Rrs555 < 0.007)] = 2
-    Imagebbp[(nflh > 0.02) & (Rrs555 < 0.0007) & (chl > 1.5) & (bbp555QAA < bbpmorel)] = 3  # Karenia
+    Imagebbp[(nflh > 0.02) & (Rrs555 < 0.007) & (bbp555QAA < bbpmorel)] = 3  # Karenia
     return Imagebbp
 
 
@@ -34,11 +34,11 @@ def SS(nlw488, nlw443, nlw531, chl):
 def RBDKBBI(nlw667, nlw678, chl):
     RBD = nlw678 - nlw667
     KBBI = (nlw678 - nlw667) / (nlw678 + nlw667)
-    ImageRBD = np.ones(np.shape(chl))
+
     ImageKBBI = np.ones(np.shape(chl))
-    ImageRBD[chl.mask] = 0
+
     ImageKBBI[chl.mask] = 0
-    ImageRBD[RBD > 0.015] = 3
+
     ImageKBBI[RBD > 0.015] = 2
     ImageKBBI[(RBD > 0.015) & (KBBI > 0.3 * RBD)] = 3
     return ImageKBBI

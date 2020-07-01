@@ -62,10 +62,15 @@ UC = {'minlon': 132.20,
 # maxlon=135.446
 # maxlat=34.775
 # minlat=34.20
-OR = {'minlon': 134.02,
-      'maxlon': 135.45,
-      'minlat': 34.20,
-      'maxlat': 34.78}
+OB = {'minlon': 134.89,
+      'maxlon': 135.48,
+      'minlat': 34.27,
+      'maxlat': 34.73}#Osaka bay
+
+HN = {'minlon': 134.0,
+      'maxlon': 134.88,
+      'minlat': 34.8,
+      'maxlat': 34.20}# Harima nada
 
 lat = np.asarray(ele.variables['lat'])
 lon = np.asarray(ele.variables['lon'])
@@ -115,7 +120,8 @@ dict = {
     'EO': EO,
     'NO': NO,
     'UC': UC,
-    'OR': OR
+    'OB': OB,
+    'HN':HN
 }
 
 
