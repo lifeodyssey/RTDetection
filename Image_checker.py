@@ -62,7 +62,8 @@ area = [
     'EO',
     'NO',
     'UC',
-    'OR']
+    'OB',
+    'HN']
 
 # area = [
 #     'OB',
@@ -231,8 +232,8 @@ for q in range(l2):
 
     HN = {'minlon': 134.0,
           'maxlon': 134.88,
-          'minlat': 34.8,
-          'maxlat': 34.20}  # Harima nada
+          'minlat': 34.2,
+          'maxlat': 34.80}  # Harima nada
     # areadict = {
     #     'EO': EO,
     #     'NO': NO,
@@ -291,7 +292,7 @@ for q in range(l2):
     print('Time consuming...')
     print(time2 - initime)
 
-df.to_excel('result_t8cao.xlsx')
+df.to_excel('zuihouyicile.xlsx')
 
 ## todo there are some problem in the output
 ## todo possible multiprocessing code

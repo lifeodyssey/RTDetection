@@ -99,7 +99,7 @@ p = m.pcolor(x2d, y2d, bathymetry, vmin=cmn, vmax=cmx, cmap=cmap)
 cb = m.colorbar(p, location="right", size="5%", pad=0.1)  # draw colorbar
 
 cb.ax.tick_params(labelsize=10)
-label = 'Bathymetry(m)'
+label = 'Depth(m)'
 cb.set_label(label, labelpad=10.0, fontsize=10)
 
 

@@ -15,7 +15,7 @@ from datetime import datetime
 
 os.environ['PROJ_LIB'] = '/Users/zhenjia/opt/anaconda3/share/proj'
 
-obs500 = pd.read_excel('/Users/zhenjia/Desktop/Field_zheng2_OR_seperate.xlsx', sheet_name='500')
+
 warnings.filterwarnings("ignore")  # 用来去掉Warning,
 
 import matplotlib.pyplot as plt
@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 # path='I:/Nagoya University/Project/Seto/MODIS/'
 os.chdir('/Users/zhenjia/Desktop/Project/Seto/MODIS/l2')
 path = '/Users/zhenjia/Desktop/Project/Seto/MODIS/l2/'
+obs500 = pd.read_excel('/Users/zhenjia/Desktop/Field_zheng2_OR_seperate.xlsx', sheet_name='500')
 datalist = glob.glob('*.nc')
 
 #
@@ -58,15 +59,12 @@ minlon = 131
 maxlat = 35
 maxlon = 136
 
-# area = [
-#     'EO',
-#     'NO',
-#     'UC',
-#     'OR']
-#
 area = [
-    'OB',
     'HN']
+
+# area = [
+#     'OB',
+#     'HN']
 
 methods = ['bbp',
            'Eko',
@@ -239,19 +237,13 @@ for q in range(l2):
     #     'UC': UC,
     #     'OR': OR
     # }
+    areadict = {
+        'HN': HN
+    }
     # areadict = {
-    #     'EO': EO,
-    #     'NO': NO,
-    #     'UC': UC,
     #     'OB': OB,
     #     'HN':HN
     # }
-    areadict = {
-        'OB': OB,
-        'HN':HN
-    }
-
-
 
     methoddict = {'bbp': Imagebbp,
                   'Eko': ImageEKO,
@@ -291,9 +283,9 @@ for q in range(l2):
     print(q / l2)
     time2 = datetime.now()
     print('Time consuming...')
-    print(time2-initime)
+    print(time2 - initime)
 
-df.to_excel('result_t4_OR_seprated_back.xlsx')
+df.to_excel('result_t7.4_hnonly.xlsx')
 
 ## todo there are some problem in the output
 ## todo possible multiprocessing code

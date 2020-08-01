@@ -317,12 +317,12 @@ def plot_geo_image(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bo
     # cax = plt.axes([cmn, 0, cmx])  # setup colorbar axes
 
     cb = m.colorbar(p, location="right", size="5%", pad=0.1)  # draw colorbar
-    # if label is not None:
-    # cb.set_label("%s" % label)
-    # plt.sca(ax)  # make the original axes current again
-    # plt.clim(cmn, cmx)
-    # unit='Elevation to the sea level'
-    # cb.set_label(unit, rotation=270, labelpad=10.0, fontsize=10)
+    if label is not None:
+        cb.set_label("%s" % label)
+    plt.sca(ax)  # make the original axes current again
+    plt.clim(cmn, cmx)
+    unit='Elevation to the sea level'
+    cb.set_label(unit, rotation=270, labelpad=10.0, fontsize=10)
     cb.ax.tick_params(labelsize=10)
 
     m.drawcoastlines()
@@ -397,11 +397,11 @@ def plot_chl(sds: np.ma.array, lon: np.ndarray, lat: np.ndarray, log10: bool = T
     if (lon_range is not None) and (lat_range is not None):
         m = Basemap(llcrnrlon=min(lon_range), llcrnrlat=min(lat_range),
                     urcrnrlon=max(lon_range), urcrnrlat=max(lat_range),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='merc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='merc')
     else:
         m = Basemap(llcrnrlon=lon.min(), llcrnrlat=lat.min(),
                     urcrnrlon=lon.max(), urcrnrlat=lat.max(),
-                    resolution='i', lon_0=lon_0, lat_0=lat_0, projection='merc')
+                    resolution='f', lon_0=lon_0, lat_0=lat_0, projection='merc')
     x2d, y2d = m(lon, lat)
 
     fig = plt.figure(figsize=(8, 8 * m.aspect))

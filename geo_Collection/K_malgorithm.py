@@ -39,8 +39,8 @@ def RBDKBBI(nlw667, nlw678, chl):
 
     ImageKBBI[chl.mask] = 0
 
-    ImageKBBI[RBD > 0.015] = 2
-    ImageKBBI[(RBD > 0.015) & (KBBI > 0.3 * RBD)] = 3
+    ImageKBBI[RBD > 0.15] = 2
+    ImageKBBI[(RBD > 0.15) & (KBBI > 0.3 * RBD)] = 3
     return ImageKBBI
 
 
